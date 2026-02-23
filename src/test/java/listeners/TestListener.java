@@ -22,9 +22,9 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onTestStart(ITestResult result) {
-    	String name = result.getMethod().getMethodName() + " " + Arrays.toString(result.getParameters());
-    	extent_test.set(ex_report.createTest(name));
-
+        String name = result.getMethod().getMethodName() + " " + Arrays.toString(result.getParameters());
+        extent_test.set(ex_report.createTest(name));
+        extent_test.get().info("Test Started");
     }
 
     @Override
@@ -37,6 +37,7 @@ public class TestListener implements ITestListener {
         WebDriver driver = BaseClass.getDriver();
         String name = result.getMethod().getMethodName();
 
+        extent_test.get().fail("Test FAILED");
         extent_test.get().fail(result.getThrowable());
 
         try {
@@ -49,6 +50,6 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onFinish(ITestContext context) {
-        ex_report.flush(); // VERY IMPORTANT
+        ex_report.flush();
     }
 }
