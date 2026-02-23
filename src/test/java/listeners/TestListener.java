@@ -1,6 +1,7 @@
 package listeners;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
@@ -21,8 +22,9 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onTestStart(ITestResult result) {
-        String name = result.getMethod().getMethodName();
-        extent_test.set(ex_report.createTest(name));
+    	String name = result.getMethod().getMethodName() + " " + Arrays.toString(result.getParameters());
+    	extent_test.set(ex_report.createTest(name));
+
     }
 
     @Override
