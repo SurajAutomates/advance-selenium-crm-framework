@@ -35,7 +35,8 @@ public class PlaceOrderTest extends BaseClass {
 		// Wait for success notification
 		
 		String msg = productPage.getToastMessage();
-		Assert.assertTrue(msg.contains("Product Added To Cart"));
+//		Assert.assertTrue(msg.contains("Product Added To Cart"));
+		Assert.assertTrue(false);
 
 //		--------------------------------------------------------------------------------------------------------------
 		CartPage cartPage = productPage.goToCart();
