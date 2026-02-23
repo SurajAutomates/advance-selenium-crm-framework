@@ -14,50 +14,39 @@ import advanceReport.ExtentManager;
 import base.BaseClass;
 import genericUtilitis.ScreenshotUtil;
 
-public class TestListener implements ITestListener{
+public class TestListener implements ITestListener {
 
-	ExtentReports ex_report = new ExtentManager().getExtentReportObject();
-	ExtentTest extent_test;
-	
-	@Override
-	public void onTestStart(ITestResult result) {
-		System.out.println("test start");
-		String name = result.getMethod().getMethodName();
-		extent_test = ex_report.createTest(name);
-		
-	}
+    private static ExtentReports ex_report = new ExtentManager().getExtentReportObject();
+    private static ThreadLocal<ExtentTest> extent_test = new ThreadLocal<>();
 
-	@Override
-	public void onTestSuccess(ITestResult result) {
-		System.out.println("test pass");
-		extent_test.pass("Test PASSED");
-	}
+    @Override
+    public void onTestStart(ITestResult result) {
+        String name = result.getMethod().getMethodName();
+        extent_test.set(ex_report.createTest(name));
+    }
 
-	@Override
-	public void onTestFailure(ITestResult result) {
-		String name = result.getMethod().getMethodName();
-		WebDriver driver = BaseClass.getDriver();
-		extent_test.fail("Test FAILED : "+result.getThrowable());
-		String path = null;
-		try {
-			 path = ScreenshotUtil.takeScreenshot(driver, name);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		if (path!=null) {
-			extent_test.addScreenCaptureFromPath(path);
-		}
-	}
+    @Override
+    public void onTestSuccess(ITestResult result) {
+        extent_test.get().pass("Test PASSED");
+    }
 
-	@Override
-	public void onStart(ITestContext context) {
-		System.out.println("suite start");
-	}
+    @Override
+    public void onTestFailure(ITestResult result) {
+        WebDriver driver = BaseClass.getDriver();
+        String name = result.getMethod().getMethodName();
 
-	@Override
-	public void onFinish(ITestContext context) {
-		System.out.println("suite end");
-		ex_report.flush();
-	}
-	
+        extent_test.get().fail(result.getThrowable());
+
+        try {
+            String path = ScreenshotUtil.takeScreenshot(driver, name);
+            extent_test.get().addScreenCaptureFromPath(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onFinish(ITestContext context) {
+        ex_report.flush(); // VERY IMPORTANT
+    }
 }
